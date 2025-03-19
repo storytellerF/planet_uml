@@ -1,5 +1,6 @@
 package org.example
 
+import com.strumenta.antlrkotlin.parsers.generated.PlantUMLParser
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -31,7 +32,14 @@ class Node(
     val fillColor: NodeColor
 )
 
-class ActivityDiagram(val activityDiagram: PlantUMLParser.Activity_diagramContext) : Diagram {
+//
+data class Transition(
+    val left: PlantUMLParser.Activity_stateContext?,
+    val right: PlantUMLParser.Activity_stateContext?,
+    val label: String?
+)
+
+class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) : Diagram {
     val nodeMap = mutableMapOf<String, Node>(
         "START" to Node(
             "(*)", NodeShape.CIRCLE, listOf(NodeStyle.FILLED), fillColor = NodeColor.Const(
@@ -49,28 +57,45 @@ class ActivityDiagram(val activityDiagram: PlantUMLParser.Activity_diagramContex
     val transitions: List<String>
 
     init {
+        val topTransition = activityDiagram.activity_top_transition()
         val statements = mutableListOf(
-            activityDiagram.activity_top_transition().activity_state(0) to activityDiagram.activity_top_transition()
-                .activity_state(1)
+            Transition(
+                topTransition.activity_state(0), topTransition
+                    .activity_state(1), topTransition.transition_label()?.text
+            )
         )
         activityDiagram.activity_statement().forEachIndexed { i, it ->
             val activityTransition = it.activity_transition()
             statements.add(
                 if (activityTransition.activity_state().size == 1) {
-                    statements[i].second to activityTransition.activity_state(0)
+                    Transition(
+                        statements[i].right,
+                        activityTransition.activity_state(0),
+                        activityTransition.transition_label()?.PARAGRAPH()?.text
+                    )
                 } else {
-                    activityTransition.activity_state(0) to it.activity_transition().activity_state(1)
+                    Transition(
+                        activityTransition.activity_state(0),
+                        it.activity_transition().activity_state(1),
+                        activityTransition.transition_label()?.PARAGRAPH()?.text
+                    )
                 }
             )
         }
-        transitions = statements.map { (leftState, rightState) ->
-            val leftName = leftState.identifier()?.let {
+        transitions = statements.map { (leftState, rightState, label) ->
+            val leftName = leftState?.identifier()?.let {
                 addCustomNode(it.text, nodeMap).label
             } ?: "START"
-            val rightName = rightState.identifier()?.let {
+            val rightName = rightState?.identifier()?.let {
                 addCustomNode(it.text, nodeMap).label
             } ?: "END"
-            "$leftName -> $rightName [arrowhead=vee];"
+            val extra = buildString {
+                append("arrowhead=vee")
+                if (!label.isNullOrBlank()) {
+                    append(" label=$label")
+                }
+            }
+            "$leftName -> $rightName [$extra];"
         }
 
 

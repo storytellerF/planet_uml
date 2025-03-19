@@ -1,29 +1,30 @@
 package org.example
 
-import PlantUMLLexer
-import PlantUMLParser
-import org.antlr.v4.runtime.ANTLRInputStream
-import org.antlr.v4.runtime.CommonTokenStream
+import com.strumenta.antlrkotlin.parsers.generated.PlantUMLLexer
+import com.strumenta.antlrkotlin.parsers.generated.PlantUMLParser
+import org.antlr.v4.kotlinruntime.CharStreams
+import org.antlr.v4.kotlinruntime.CommonTokenStream
 import kotlin.uuid.ExperimentalUuidApi
 
 fun main() {
     parsePlantUML(
         """@startuml
-(*) --> "First Activity"
+(*) --> [You] "First Activity"
 --> (*)
 @enduml""".trim()
     )
 }
 
-
+//
 @OptIn(ExperimentalUuidApi::class)
 fun parsePlantUML(plantUMLContent: String) {
-    val inputStream = ANTLRInputStream(plantUMLContent)
+    val inputStream = CharStreams.fromString(plantUMLContent)
     val lexer = PlantUMLLexer(inputStream)
     val tokens = CommonTokenStream(lexer)
     val parser = PlantUMLParser(tokens)
 
-    val activityDiagram = ActivityDiagram(parser.plantuml().diagram().activity_diagram())
+    val diagramContext = parser.plantuml().diagram()?.activity_diagram() ?: return
+    val activityDiagram = ActivityDiagram(diagramContext)
     println(buildString {
         append("digraph ")
         appendScope {

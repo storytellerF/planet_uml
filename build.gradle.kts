@@ -1,6 +1,9 @@
+import com.strumenta.antlrkotlin.gradle.AntlrKotlinTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "2.1.10"
-    antlr
+    id("com.strumenta.antlr-kotlin") version "1.0.2"
 }
 
 group = "org.example"
@@ -12,7 +15,7 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
-    antlr("org.antlr:antlr4:4.5") // use ANTLR version 4
+    implementation("com.strumenta:antlr-kotlin-runtime:1.0.2")
 }
 
 tasks.test {
@@ -22,12 +25,35 @@ kotlin {
     jvmToolchain(21)
 }
 
-//antlr {
-//    // 指定语法文件目录
-//    sourceSets["main"].java.srcDirs("src/main/antlr")
-//    outputDirectory.set(file("build/generated-src/antlr/main"))
-//}
+val generateKotlinGrammarSource = tasks.register<AntlrKotlinTask>("generateKotlinGrammarSource") {
+    dependsOn("cleanGenerateKotlinGrammarSource")
 
-tasks.generateGrammarSource {
-    dependsOn(tasks.compileKotlin)
+    // ANTLR .g4 files are under {example-project}/antlr
+    // Only include *.g4 files. This allows tools (e.g., IDE plugins)
+    // to generate temporary files inside the base path
+    source = fileTree(layout.projectDirectory.dir("src/main/antlr")) {
+        include("**/*.g4")
+    }
+
+    // We want the generated source files to have this package name
+    val pkgName = "com.strumenta.antlrkotlin.parsers.generated"
+    packageName = pkgName
+
+    // We want visitors alongside listeners.
+    // The Kotlin target language is implicit, as is the file encoding (UTF-8)
+    arguments = listOf("-visitor")
+
+    // Generated files are outputted inside build/generatedAntlr/{package-name}
+    val outDir = "generatedAntlr/${pkgName.replace(".", "/")}"
+    outputDirectory = layout.buildDirectory.dir(outDir).get().asFile
+}
+
+tasks.withType<KotlinCompile> {
+    dependsOn(generateKotlinGrammarSource)
+}
+
+sourceSets {
+    main {
+        kotlin.srcDir(layout.buildDirectory.dir("generatedAntlr"))
+    }
 }
