@@ -57,24 +57,20 @@ class ActivityDiagram(val activityDiagram: PlantUMLParser.Activity_diagramContex
             val activityTransition = it.activity_transition()
             statements.add(
                 if (activityTransition.activity_state().size == 1) {
-                    null to activityTransition.activity_state(0)
+                    statements[i].second to activityTransition.activity_state(0)
                 } else {
                     activityTransition.activity_state(0) to it.activity_transition().activity_state(1)
                 }
             )
         }
         transitions = statements.map { (leftState, rightState) ->
+            val leftName = leftState.identifier()?.let {
+                addCustomNode(it.text, nodeMap).label
+            } ?: "START"
             val rightName = rightState.identifier()?.let {
                 addCustomNode(it.text, nodeMap).label
             } ?: "END"
-            if (leftState != null) {
-                val leftName = leftState.identifier()?.let {
-                    addCustomNode(it.text, nodeMap).label
-                } ?: "START"
-                "$leftName -> $rightName"
-            } else {
-                "-> $rightName"
-            }
+            "$leftName -> $rightName [arrowhead=vee];"
         }
 
 

@@ -7,7 +7,6 @@ import org.antlr.v4.runtime.CommonTokenStream
 import kotlin.uuid.ExperimentalUuidApi
 
 fun main() {
-    println("Hello World!")
     parsePlantUML(
         """@startuml
 (*) --> "First Activity"
