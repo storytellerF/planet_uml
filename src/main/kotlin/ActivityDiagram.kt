@@ -36,7 +36,8 @@ class Node(
 data class Transition(
     val left: PlantUMLParser.Activity_stateContext?,
     val right: PlantUMLParser.Activity_stateContext?,
-    val label: String?
+    val label: String?,
+    val dir: String? = null
 )
 
 class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) : Diagram {
@@ -61,7 +62,8 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
         val statements = mutableListOf(
             Transition(
                 topTransition.activity_state(0), topTransition
-                    .activity_state(1), topTransition.transition_label()?.text
+                    .activity_state(1), topTransition.transition_label()?.paragraphText(),
+                topTransition.activity_arrow().getDirStr()
             )
         )
         activityDiagram.activity_statement().forEachIndexed { i, it ->
@@ -71,18 +73,20 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                     Transition(
                         statements[i].right,
                         activityTransition.activity_state(0),
-                        activityTransition.transition_label()?.PARAGRAPH()?.text
+                        activityTransition.transition_label()?.paragraphText(),
+                        activityTransition.activity_arrow().getDirStr()
                     )
                 } else {
                     Transition(
                         activityTransition.activity_state(0),
                         it.activity_transition().activity_state(1),
-                        activityTransition.transition_label()?.PARAGRAPH()?.text
+                        activityTransition.transition_label()?.paragraphText(),
+                        activityTransition.activity_arrow().getDirStr()
                     )
                 }
             )
         }
-        transitions = statements.map { (leftState, rightState, label) ->
+        transitions = statements.map { (leftState, rightState, label, dir) ->
             val leftName = leftState?.identifier()?.let {
                 addCustomNode(it.text, nodeMap).label
             } ?: "START"
@@ -94,11 +98,36 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 if (!label.isNullOrBlank()) {
                     append(" label=$label")
                 }
+                when (dir) {
+                    "up" -> append(" arrowhead=none arrowtail=vee dir=back")
+                    "right" -> append(" constraint=false")
+                }
             }
-            "$leftName -> $rightName [$extra];"
+            if (dir == "up") {
+                "$rightName -> $leftName [$extra];"
+            } else {
+                "$leftName -> $rightName [$extra];"
+            }
         }
 
 
+    }
+
+    private fun PlantUMLParser.Activity_arrowContext.getDirStr(): String? {
+        val d = if (activity_arrow_right() != null) {
+            "right"
+        } else if (activity_arrow_dir() != null) {
+            activity_arrow_dir()?.ARROW()?.text
+        } else {
+            null
+        }
+        println(d)
+        return d
+    }
+
+    private fun PlantUMLParser.Transition_labelContext?.paragraphText() : String? {
+        if (this == null) return null
+        return PARAGRAPH().text
     }
 }
 
