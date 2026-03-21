@@ -16,8 +16,14 @@ import kotlin.uuid.ExperimentalUuidApi
 fun main() {
     parsePlantUML(
         """@startuml
-(*) -up-> [You] "First Activity"
---> (*)
+start
+:Hello world;
+if (condition) then (yes)
+  :Some activity;
+else (no)
+  :Other activity;
+endif
+stop
 @enduml""".trim()
     )
 }
