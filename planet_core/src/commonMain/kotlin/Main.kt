@@ -89,3 +89,26 @@ fun buildStringInScope(block: () -> List<String>): List<String> {
         add("}")
     }
 }
+
+fun main() {
+    val src = """
+        @startuml
+        start
+        switch (condition?)
+        case (A)
+          :Action A;
+        case (B)
+          :Action B;
+        endswitch
+        stop
+        @enduml
+    """.trimIndent()
+    val diagram = parsePlantUML(src)
+    if (diagram != null) {
+        println("Transitions:")
+        diagram.transitions.forEach { println(it) }
+        println("\nSVG:\n${diagram.toSvg()}")
+    } else {
+        println("Failed to parse diagram")
+    }
+}

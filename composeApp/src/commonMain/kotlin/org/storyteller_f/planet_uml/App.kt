@@ -6,6 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -13,27 +14,57 @@ import org.example.parsePlantUML
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
+object Samples {
+    val basicActivity = """
+        @startuml
+        start
+        :Hello world;
+        note right: This is a note
+        if (condition) then (yes)
+          :Some activity;
+        elseif (other) then (maybe)
+          :Another activity;
+          kill
+        else (no)
+          :Other activity;
+        endif
+        stop
+        @enduml
+    """.trimIndent()
+
+    val switchCase = """
+        @startuml
+        start
+        switch (condition?)
+        case (A)
+          :Action A;
+        case (B)
+          :Action B;
+        endswitch
+        stop
+        @enduml
+    """.trimIndent()
+
+    val parallelLoops = """
+        @startuml
+        start
+        fork
+          :Parallel 1;
+        fork again
+          :Parallel 2;
+        end fork
+        repeat
+          :Looping;
+        repeat while (more?)
+        stop
+        @enduml
+    """.trimIndent()
+}
+
 @Composable
 fun App() {
     MaterialTheme {
-        var plantUmlText by remember {
-            mutableStateOf(
-                """@startuml
-start
-:Hello world;
-note right: This is a note
-if (condition) then (yes)
-  :Some activity;
-elseif (other) then (maybe)
-  :Another activity;
-  kill
-else (no)
-  :Other activity;
-endif
-stop
-@enduml""".trim()
-            )
-        }
+        var plantUmlText by remember { mutableStateOf(Samples.basicActivity) }
 
         var svgDataUri by remember { mutableStateOf<String?>(null) }
         var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -61,7 +92,35 @@ stop
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            // Left Pane: Editor
+            // Section 1: Button Column
+            Column(
+                modifier = Modifier
+                    .width(200.dp)
+                    .fillMaxHeight()
+                    .padding(16.dp)
+            ) {
+                Text("Samples", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { plantUmlText = Samples.basicActivity }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    Text("Basic")
+                }
+                Button(onClick = { plantUmlText = Samples.switchCase }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    Text("Switch")
+                }
+                Button(onClick = { plantUmlText = Samples.parallelLoops }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Loops/Forks")
+                }
+            }
+
+            // Divider
+            HorizontalDivider(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(1.dp),
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+
+            // Section 2: Editor
             Column(
                 modifier = Modifier
                     .weight(1f)

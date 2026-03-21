@@ -9,6 +9,7 @@ activity_diagram: statement*;
 statement:
       action
     | conditional
+    | switch_stmt
     | loop_while
     | loop_repeat
     | parallel
@@ -28,6 +29,9 @@ conditional: IF '(' paragraph_text ')' THEN ('(' paragraph_text ')')? EOL?
              (ELSE ('(' paragraph_text ')')? EOL?
              statement* )?
              ENDIF EOL?;
+
+switch_stmt: SWITCH '(' paragraph_text ')' EOL? case_stmt* ENDSWITCH EOL?;
+case_stmt: CASE '(' paragraph_text ')' EOL? statement*;
 
 loop_while: WHILE '(' paragraph_text ')' (IS '(' paragraph_text ')')? EOL?
             statement*
@@ -50,7 +54,7 @@ legacy_transition: activity_state activity_arrow transition_label? activity_stat
 
 transition_label: '[' paragraph_text ']';
 
-paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | OTHER_CHAR)+;
+paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | SWITCH | CASE | ENDSWITCH | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | OTHER_CHAR)+;
 
 activity_state: identifier | ACTIVITY_START_END;
 
@@ -75,6 +79,10 @@ THEN: 'then';
 ELSEIF: 'elseif';
 ELSE: 'else';
 ENDIF: 'endif';
+
+SWITCH: 'switch';
+CASE: 'case';
+ENDSWITCH: 'endswitch';
 
 WHILE: 'while';
 IS: 'is';

@@ -50,12 +50,13 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
         }
     }
 
-    private fun addEdge(from: Node, to: Node, label: String? = null) {
+    private fun addEdge(from: Node, to: Node, label: String? = null, isBackEdge: Boolean = false) {
         val extra = buildString {
             append("arrowhead=vee")
             label?.takeIf { it.isNotBlank() }?.let {
                 append(" label=\"$it\"")
             }
+            if (isBackEdge) append(" constraint=false")
         }
         transitionsList.add("${from.identifier} -> ${to.identifier} [$extra];")
     }
@@ -68,6 +69,38 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 val node = createNode(label, NodeShape.RECT, listOf(NodeStyle.FILLED, NodeStyle.ROUNDED), ConstColor.GRAY)
                 tails.forEach { addEdge(it, node) }
                 return listOf(node)
+            }
+            stmt.switch_stmt() != null -> {
+                val ctx = stmt.switch_stmt()!!
+                val condition = ctx.paragraph_text()?.text?.trim() ?: "switch"
+                val diamond = createNode(condition, NodeShape.DIAMOND, emptyList(), ConstColor.GRAY)
+                tails.forEach { addEdge(it, diamond) }
+
+                val outTails = mutableListOf<Node>()
+                var hasCases = false
+                
+                for (caseCtx in ctx.case_stmt()) {
+                    hasCases = true
+                    val caseCond = caseCtx.paragraph_text()?.text?.trim() ?: ""
+                    
+                    if (caseCtx.statement().isNotEmpty()) {
+                        var caseTails = listOf(diamond)
+                        val firstNodes = processStatement(caseCtx.statement().first(), emptyList())
+                        firstNodes.forEach { addEdge(diamond, it, caseCond) }
+                        caseTails = firstNodes
+                        for (j in 1 until caseCtx.statement().size) {
+                            caseTails = processStatement(caseCtx.statement()[j], caseTails)
+                        }
+                        outTails.addAll(caseTails)
+                    } else {
+                        outTails.add(diamond)
+                    }
+                }
+                
+                if (!hasCases) {
+                    outTails.add(diamond)
+                }
+                return outTails
             }
             stmt.conditional() != null -> {
                 val condCtx = stmt.conditional()!!
@@ -200,7 +233,7 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 }
                 
                 // Loop back
-                loopTails.forEach { addEdge(it, diamond) }
+                loopTails.forEach { addEdge(it, diamond, isBackEdge = true) }
                 
                 // Exit point is the diamond, with a "no" label (graphviz edge label for the NEXT statement)
                 // We'll leave the label off for now to keep mapping simple
@@ -226,7 +259,7 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                  
                  // loop back
                  val isLabel = if (stmt.loop_repeat()!!.IS() != null) stmt.loop_repeat()!!.paragraph_text(1)?.text?.trim() else "yes"
-                 addEdge(diamond, entry, isLabel)
+                 addEdge(diamond, entry, isLabel, isBackEdge = true)
                  
                  return listOf(diamond) // exit from diamond
             }
@@ -311,8 +344,11 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 val labelMatch = Regex("label=\"([^\"]+)\"").find(transition)
                 if (labelMatch != null) label = labelMatch.groupValues[1]
 
-                incomingCounts[to] = (incomingCounts[to] ?: 0) + 1
-                edges.add(Edge(from, to, label))
+                val isBackEdge = transition.contains("constraint=false")
+                if (!isBackEdge) {
+                    incomingCounts[to] = (incomingCounts[to] ?: 0) + 1
+                }
+                edges.add(Edge(from, to, label, isBackEdge))
             }
         }
 
@@ -329,7 +365,7 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
             val existingDepth = layers[nodeId] ?: -1
             if (depth > existingDepth) {
                 layers[nodeId] = depth
-                val outEdges = edges.filter { it.from == nodeId }
+                val outEdges = edges.filter { it.from == nodeId && !it.isBackEdge }
                 outEdges.forEach { queue.addLast(it.to to depth + 1) }
             }
         }
@@ -451,4 +487,4 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
     }
 }
 
-private data class Edge(val from: String, val to: String, val label: String)
+private data class Edge(val from: String, val to: String, val label: String, val isBackEdge: Boolean = false)
