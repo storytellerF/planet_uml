@@ -1,0 +1,13 @@
+package org.storyteller_f.planet_uml
+
+import androidx.compose.ui.window.Window
+import androidx.compose.ui.window.application
+
+fun main() = application {
+    Window(
+        onCloseRequest = ::exitApplication,
+        title = "planet_uml",
+    ) {
+        App()
+    }
+}
