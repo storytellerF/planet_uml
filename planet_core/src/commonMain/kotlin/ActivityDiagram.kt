@@ -71,77 +71,93 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
             }
             stmt.conditional() != null -> {
                 val condCtx = stmt.conditional()!!
-                // Condition node
-                val condLabel = condCtx.paragraph_text(0)?.text?.trim() ?: ""
-                val diamond = createNode(condLabel, NodeShape.DIAMOND, emptyList(), ConstColor.GRAY)
-                tails.forEach { addEdge(it, diamond) }
-
-                // The 'then' block
-                val thenLabel = if (condCtx.paragraph_text().size > 1) condCtx.paragraph_text(1)?.text?.trim() else null
-                var thenTails = listOf(diamond)
-                var statementsStartIndex = 0
-                val thenStatements = mutableListOf<PlantUMLParser.StatementContext>()
-                // Extract statements until ELSE or ENDIF (we can just filter out based on parse tree order but better is using statement lists if ANTLR supports statement(i) grouped)
-                // Oh wait, conditional has statement* twice. ANTLR groups them into a single list statement()
-                // It's safer to just rely on the count... actually this is tricky in Kotlin ANTLR.
-                // A better way is to iterate children.
+                class Branch(var condition: String = "", var label: String? = null, val stmts: MutableList<PlantUMLParser.StatementContext> = mutableListOf())
+                val branches = mutableListOf<Branch>()
+                var activeBranch = Branch()
+                var expectCondition = true
+                var expectLabel = false
                 var isElse = false
-                val thenStmts = mutableListOf<PlantUMLParser.StatementContext>()
-                val elseStmts = mutableListOf<PlantUMLParser.StatementContext>()
+
                 for (child in condCtx.children!!) {
-                    if (child.text == "else") {
+                    if (child.text == "if" || child.text == "elseif") {
+                        if (child.text == "elseif") {
+                            branches.add(activeBranch)
+                            activeBranch = Branch()
+                        }
+                        expectCondition = true
+                        expectLabel = false
+                    } else if (child.text == "then") {
+                        expectCondition = false
+                        expectLabel = true
+                    } else if (child.text == "else") {
+                        branches.add(activeBranch)
+                        activeBranch = Branch()
+                        expectCondition = false
+                        expectLabel = true
                         isElse = true
+                    } else if (child.text == "endif") {
+                        branches.add(activeBranch)
+                        break
+                    } else if (child is PlantUMLParser.Paragraph_textContext) {
+                        if (expectCondition) {
+                            activeBranch.condition = child.text.trim()
+                            expectCondition = false
+                        } else if (expectLabel) {
+                            activeBranch.label = child.text.trim()
+                            expectLabel = false
+                        }
                     } else if (child is PlantUMLParser.StatementContext) {
-                        if (isElse) elseStmts.add(child) else thenStmts.add(child)
+                        activeBranch.stmts.add(child)
+                        expectLabel = false
                     }
                 }
                 
-                // process then
-                // For the very first node in then block, its incoming edge from diamond needs the 'thenLabel'
-                var thenCurrentTails = listOf(diamond)
-                val thenFirstStmts = thenStmts.take(1)
-                
-                if (thenStmts.isEmpty()) {
-                    // empty block, but need to attach edge if needed? But if empty, tails is just diamond
-                } else {
-                    val firstNode = processStatement(thenStmts.first(), emptyList())
-                    // Connect diamond to first node of then
-                    firstNode.forEach { addEdge(diamond, it, thenLabel ?: "yes") }
-                    thenCurrentTails = firstNode
-                    for (i in 1 until thenStmts.size) {
-                        thenCurrentTails = processStatement(thenStmts[i], thenCurrentTails)
-                    }
-                }
-
-                // process else
-                var elseCurrentTails = listOf(diamond)
-                val elseLabel = if (condCtx.ELSE() != null && condCtx.paragraph_text().size > 2) condCtx.paragraph_text(2)?.text?.trim() else null
-                
-                if (elseStmts.isEmpty()) {
-                     // Wait, if there's no else branch, what's the exit? 
-                     // The exit is from diamond straight to next node.
-                     // We can represent this by returning diamond for the else branch!
-                     // But with edge label `elseLabel` or "no". This is tricky since we must add that edge later.
-                     // To solve this, we can insert a dummy NO-OP node or just let the caller add edge.
-                     // Actually, if we return diamond, the caller will add edge from diamond to NEXT node.
-                     // But graphviz needs edge label on that connection!
-                     // This means our output tail should probably carry the out-edge label.
-                     // To keep it simple, we can insert an invisible intermediate node or just let it fly without label.
-                }
-
-                if (elseStmts.isNotEmpty()) {
-                    val firstNode = processStatement(elseStmts.first(), emptyList())
-                    firstNode.forEach { addEdge(diamond, it, elseLabel ?: "no") }
-                    elseCurrentTails = firstNode
-                    for (i in 1 until elseStmts.size) {
-                        elseCurrentTails = processStatement(elseStmts[i], elseCurrentTails)
-                    }
-                }
-
-                // If else is missing completely, the "else" flow comes from the diamond directly.
+                var currentDiamondTails = tails
                 val branchesOut = mutableListOf<Node>()
-                branchesOut.addAll(thenCurrentTails)
-                if (elseStmts.isNotEmpty()) branchesOut.addAll(elseCurrentTails) else branchesOut.add(diamond)
+                
+                for (i in 0 until branches.size) {
+                    val branch = branches[i]
+                    val isLastBranchAndElse = (i == branches.size - 1) && isElse
+
+                    if (isLastBranchAndElse) {
+                        var branchTails = currentDiamondTails
+                        if (branch.stmts.isNotEmpty()) {
+                            val firstNodes = processStatement(branch.stmts.first(), emptyList())
+                            firstNodes.forEach { dest -> 
+                                currentDiamondTails.forEach { 
+                                    addEdge(it, dest, branch.label ?: "no") 
+                                } 
+                            }
+                            branchTails = firstNodes
+                            for (j in 1 until branch.stmts.size) {
+                                branchTails = processStatement(branch.stmts[j], branchTails)
+                            }
+                        }
+                        branchesOut.addAll(branchTails)
+                    } else {
+                        val diamond = createNode(branch.condition, NodeShape.DIAMOND, emptyList(), ConstColor.GRAY)
+                        currentDiamondTails.forEach { 
+                            val edgeLabel = if (it.shape == NodeShape.DIAMOND) "no" else null
+                            addEdge(it, diamond, edgeLabel) 
+                        }
+                        
+                        var branchTails = listOf(diamond)
+                        if (branch.stmts.isNotEmpty()) {
+                            val firstNodes = processStatement(branch.stmts.first(), emptyList())
+                            firstNodes.forEach { addEdge(diamond, it, branch.label ?: "yes") }
+                            branchTails = firstNodes
+                            for (j in 1 until branch.stmts.size) {
+                                branchTails = processStatement(branch.stmts[j], branchTails)
+                            }
+                        }
+                        branchesOut.addAll(branchTails)
+                        currentDiamondTails = listOf(diamond)
+                    }
+                }
+                
+                if (!isElse && currentDiamondTails.isNotEmpty()) {
+                    branchesOut.addAll(currentDiamondTails)
+                }
                 return branchesOut
             }
             stmt.keyword_stmt() != null -> {
@@ -150,6 +166,8 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                     val node = createNode("(*)", NodeShape.CIRCLE, listOf(NodeStyle.FILLED), ConstColor.BLACK)
                     tails.forEach { addEdge(it, node) }
                     listOf(node)
+                } else if (kw == "kill" || kw == "detach") {
+                    emptyList()
                 } else {
                     val node = createNode("(*)", NodeShape.DOUBLE_CIRCLE, listOf(NodeStyle.FILLED), ConstColor.BLACK)
                     tails.forEach { addEdge(it, node) }
@@ -246,6 +264,19 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 val forkEnd = createNode("", NodeShape.RECT, listOf(NodeStyle.FILLED), ConstColor.BLACK)
                 outTails.forEach { addEdge(it, forkEnd) }
                 return listOf(forkEnd)
+            }
+            stmt.note_stmt() != null -> {
+                val noteCtx = stmt.note_stmt()!!
+                val text = noteCtx.paragraph_text()?.text?.trim() ?: ""
+                val node = createNode(text, NodeShape.RECT, emptyList(), ConstColor.GRAY)
+                val isFloating = noteCtx.children?.any { it.text == "floating" } == true
+                if (!isFloating) {
+                    tails.forEach { 
+                        // Dotted edge equivalent
+                        addEdge(it, node, "note") 
+                    }
+                }
+                return tails 
             }
         }
         return tails

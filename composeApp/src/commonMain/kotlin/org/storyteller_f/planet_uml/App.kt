@@ -21,8 +21,12 @@ fun App() {
                 """@startuml
 start
 :Hello world;
+note right: This is a note
 if (condition) then (yes)
   :Some activity;
+elseif (other) then (maybe)
+  :Another activity;
+  kill
 else (no)
   :Other activity;
 endif

@@ -75,3 +75,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
 }
+
+tasks.register<JavaExec>("runMain") {
+    mainClass.set("org.example.MainKt")
+    val jvmTarget = kotlin.targets.getByName("jvm") as org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+    classpath = jvmTarget.compilations.getByName("main").output.allOutputs + configurations.getByName("jvmRuntimeClasspath")
+}

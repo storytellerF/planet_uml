@@ -14,12 +14,17 @@ statement:
     | parallel
     | keyword_stmt
     | legacy_transition
+    | note_stmt
     ;
+
+note_stmt: NOTE (RIGHT | LEFT | TOP | BOTTOM | FLOATING)? (OF identifier)? (':' paragraph_text EOL? | EOL? paragraph_text END_NOTE EOL?);
 
 action: ':' paragraph_text ';' EOL?;
 
 conditional: IF '(' paragraph_text ')' THEN ('(' paragraph_text ')')? EOL?
              statement*
+             (ELSEIF '(' paragraph_text ')' THEN ('(' paragraph_text ')')? EOL?
+             statement* )*
              (ELSE ('(' paragraph_text ')')? EOL?
              statement* )?
              ENDIF EOL?;
@@ -38,14 +43,14 @@ parallel: FORK EOL?
           statement*)*
           END_FORK EOL?;
 
-keyword_stmt: (START | STOP | END) EOL?;
+keyword_stmt: (START | STOP | END | KILL | DETACH) EOL?;
 
 legacy_transition: activity_state activity_arrow transition_label? activity_state EOL?
                  | activity_arrow transition_label? activity_state EOL?; 
 
 transition_label: '[' paragraph_text ']';
 
-paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSE | ENDIF | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | ARROW | OTHER_CHAR)+;
+paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | OTHER_CHAR)+;
 
 activity_state: identifier | ACTIVITY_START_END;
 
@@ -55,7 +60,7 @@ activity_arrow_dir: '-' ARROW '->';
 
 identifier: short_identifier | long_identifier;
 short_identifier: SHORT_IDENTIFIER;
-long_identifier: '"' LONG_IDENTIFIER '"';
+long_identifier: LONG_IDENTIFIER;
 
 // Tokens
 STARTUML: '@startuml';
@@ -67,6 +72,7 @@ END: 'end';
 
 IF: 'if';
 THEN: 'then';
+ELSEIF: 'elseif';
 ELSE: 'else';
 ENDIF: 'endif';
 
@@ -81,11 +87,25 @@ FORK: 'fork';
 FORK_AGAIN: 'fork again';
 END_FORK: 'end fork';
 
-ARROW: 'up' | 'down' | 'left' | 'right';
+NOTE: 'note';
+END_NOTE: 'end note';
+RIGHT: 'right';
+LEFT: 'left';
+TOP: 'top';
+BOTTOM: 'bottom';
+FLOATING: 'floating';
+OF: 'of';
+
+KILL: 'kill';
+DETACH: 'detach';
+
+UP: 'up';
+DOWN: 'down';
+ARROW: UP | DOWN | LEFT | RIGHT;
 ACTIVITY_START_END: '(*)';
 
 SHORT_IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
-LONG_IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9 ]*[a-zA-Z_0-9];
+LONG_IDENTIFIER: '"' ~('"'|'\r'|'\n')* '"';
 
 PARAGRAPH: ~('\n'|'\r'|'('|')'|';'|'['|']'|':'|' '|'\t')+ ;
 

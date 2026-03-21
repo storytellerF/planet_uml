@@ -13,21 +13,6 @@ import org.antlr.v4.kotlinruntime.atn.ATNConfigSet
 import org.antlr.v4.kotlinruntime.dfa.DFA
 import kotlin.uuid.ExperimentalUuidApi
 
-fun main() {
-    parsePlantUML(
-        """@startuml
-start
-:Hello world;
-if (condition) then (yes)
-  :Some activity;
-else (no)
-  :Other activity;
-endif
-stop
-@enduml""".trim()
-    )
-}
-
 //
 @OptIn(ExperimentalUuidApi::class)
 fun parsePlantUML(plantUMLContent: String): ActivityDiagram? {
