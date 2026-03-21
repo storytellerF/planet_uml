@@ -30,7 +30,7 @@ stop
 
 //
 @OptIn(ExperimentalUuidApi::class)
-fun parsePlantUML(plantUMLContent: String) {
+fun parsePlantUML(plantUMLContent: String): ActivityDiagram? {
     val inputStream = CharStreams.fromString(plantUMLContent)
     val lexer = PlantUMLLexer(inputStream)
     val tokens = CommonTokenStream(lexer)
@@ -83,19 +83,8 @@ fun parsePlantUML(plantUMLContent: String) {
         }
 
     })
-    val diagramContext = parser.plantuml().diagram()?.activity_diagram() ?: return
-    val activityDiagram = ActivityDiagram(diagramContext)
-    println(buildString {
-        append("digraph ")
-        appendScope {
-            buildStringInScope {
-                activityDiagram.nodeMap.map { (k, v) ->
-                    "${k}[shape=${v.shape.name.lowercase().replace("_", "")} style=\"${v.style.joinToString(",") { it.name.lowercase() }}\" fillcolor=${v.fillColor}]"
-                }
-            } + activityDiagram.transitions
-        }
-    })
-    println(parser.numberOfSyntaxErrors)
+    val diagramContext = parser.plantuml().diagram()?.activity_diagram() ?: return null
+    return ActivityDiagram(diagramContext)
 }
 
 fun StringBuilder.appendScope(block: () -> List<String>) {

@@ -4,6 +4,8 @@ import com.strumenta.antlrkotlin.parsers.generated.PlantUMLParser
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
+var textToPathProvider: ((text: String, x: Double, y: Double, fontSize: Int) -> String)? = null
+
 enum class NodeShape {
     CIRCLE, DOUBLE_CIRCLE, RECT, DIAMOND
 }
@@ -259,4 +261,163 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
         nodeMap[n.identifier] = n
         return n
     }
+
+    // A very simple vertical topological layout for SVG generation
+    fun toSvg(): String {
+        // Find roots (nodes with no incoming edges)
+        val incomingCounts = mutableMapOf<String, Int>()
+        nodeMap.keys.forEach { incomingCounts[it] = 0 }
+        
+        val edges = mutableListOf<Edge>()
+        transitionsList.forEach { transition ->
+            val parts = transition.split(" -> ")
+            if (parts.size == 2) {
+                val from = parts[0]
+                val rightPart = parts[1].split(" ")
+                val to = rightPart[0]
+                
+                var label = ""
+                val labelMatch = Regex("label=\"([^\"]+)\"").find(transition)
+                if (labelMatch != null) label = labelMatch.groupValues[1]
+
+                incomingCounts[to] = (incomingCounts[to] ?: 0) + 1
+                edges.add(Edge(from, to, label))
+            }
+        }
+
+        var roots = incomingCounts.filter { it.value == 0 }.keys.toList()
+        if (roots.isEmpty() && nodeMap.isNotEmpty()) roots = listOf(nodeMap.keys.first())
+
+        // BFS with layers
+        val layers = mutableMapOf<String, Int>()
+        val queue = ArrayDeque<Pair<String, Int>>()
+        roots.forEach { queue.addLast(it to 0) }
+        
+        while (queue.isNotEmpty()) {
+            val (nodeId, depth) = queue.removeFirst()
+            val existingDepth = layers[nodeId] ?: -1
+            if (depth > existingDepth) {
+                layers[nodeId] = depth
+                val outEdges = edges.filter { it.from == nodeId }
+                outEdges.forEach { queue.addLast(it.to to depth + 1) }
+            }
+        }
+
+        // Layout constants
+        val nodeW = 120.0
+        val nodeH = 40.0
+        val vSpacing = 80.0
+        val hSpacing = 160.0
+        
+        // Group by layer
+        val layerNodes = layers.entries.groupBy { it.value }.toSortedMap()
+        val coordinates = mutableMapOf<String, Pair<Double, Double>>()
+        
+        var maxW = 0.0
+        var maxH = 0.0
+
+        layerNodes.forEach { (depth, nodesInLayer) ->
+            val y = depth * (nodeH + vSpacing) + vSpacing
+            val totalW = nodesInLayer.size * nodeW + (nodesInLayer.size - 1) * hSpacing
+            var x = (800.0 - totalW) / 2.0 // Center it on a fixed 800px width arbitrarily
+            if (x < 40.0) x = 40.0
+
+            nodesInLayer.forEach { entry ->
+                coordinates[entry.key] = Pair(x, y)
+                if (x + nodeW > maxW) maxW = x + nodeW
+                if (y + nodeH > maxH) maxH = y + nodeH
+                x += nodeW + hSpacing
+            }
+        }
+        
+        maxW += 40.0
+        maxH += 40.0
+
+        val svg = buildString {
+            appendLine("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"$maxW\" height=\"$maxH\">")
+            
+            // Draw edges
+            appendLine("  <g stroke=\"#333333\" fill=\"none\" stroke-width=\"1.5\">")
+            edges.forEach { edge ->
+                val p1 = coordinates[edge.from]
+                val p2 = coordinates[edge.to]
+                if (p1 != null && p2 != null) {
+                    val x1 = p1.first + nodeW / 2
+                    val y1 = p1.second + nodeH
+                    val x2 = p2.first + nodeW / 2
+                    val y2 = p2.second
+
+                    // Draw a simple path with a slight curve or straight line vertically
+                    appendLine("    <path d=\"M $x1 $y1 C $x1 ${(y1+y2)/2}, $x2 ${(y1+y2)/2}, $x2 $y2\" />")
+                    
+                    // Edge arrow head
+                    appendLine("    <polygon points=\"${x2-4},${y2-6} ${x2+4},${y2-6} $x2,$y2\" fill=\"#333333\" stroke=\"none\"/>")
+
+                    // Edge label
+                    if (edge.label.isNotBlank()) {
+                        val lx = (x1 + x2) / 2 + 10
+                        val ly = (y1 + y2) / 2
+                        val provider = textToPathProvider
+                        if (provider != null) {
+                            val pathD = provider(edge.label, lx, ly.toDouble(), 12)
+                            appendLine("    <path d=\"$pathD\" fill=\"#000000\" stroke=\"none\" />")
+                        } else {
+                            appendLine("    <text x=\"$lx\" y=\"$ly\" dy=\"4\" font-family=\"sans-serif\" font-size=\"12\" fill=\"#000000\">${edge.label}</text>")
+                        }
+                    }
+                }
+            }
+            appendLine("  </g>")
+
+            // Draw nodes
+            appendLine("  <g font-family=\"sans-serif\" font-size=\"14\" text-anchor=\"middle\">")
+            nodeMap.forEach { (id, node) ->
+                val p = coordinates[id]
+                if (p != null) {
+                    val cx = p.first + nodeW / 2
+                    val cy = p.second + nodeH / 2
+                    val fillHex = if (node.fillColor.toString() == "BLACK") "#333333" else "#f0f0f0"
+                    val stroke = "#333333"
+
+                    when (node.shape) {
+                        NodeShape.CIRCLE -> {
+                            appendLine("    <circle cx=\"$cx\" cy=\"$cy\" r=\"15\" fill=\"$fillHex\" stroke=\"$stroke\" stroke-width=\"2\"/>")
+                        }
+                        NodeShape.DOUBLE_CIRCLE -> {
+                            appendLine("    <circle cx=\"$cx\" cy=\"$cy\" r=\"15\" fill=\"none\" stroke=\"$stroke\" stroke-width=\"2\"/>")
+                            appendLine("    <circle cx=\"$cx\" cy=\"$cy\" r=\"10\" fill=\"$fillHex\" stroke=\"$stroke\" stroke-width=\"2\"/>")
+                        }
+                        NodeShape.DIAMOND -> {
+                            val dw = 20.0
+                            val dh = 20.0
+                            appendLine("    <polygon points=\"$cx,${cy-dh} ${cx+dw},$cy $cx,${cy+dh} ${cx-dw},$cy\" fill=\"#f9f9db\" stroke=\"$stroke\" stroke-width=\"1.5\"/>")
+                            // Small label next to diamond sometimes
+                        }
+                        NodeShape.RECT -> {
+                            if (node.label.isBlank() && node.fillColor.toString() == "BLACK") {
+                                // Fork/join thick bar
+                                appendLine("    <rect x=\"${p.first}\" y=\"${cy-3}\" width=\"$nodeW\" height=\"6\" fill=\"$fillHex\" />")
+                            } else {
+                                val rx = if (node.style.contains(NodeStyle.ROUNDED)) "10" else "0"
+                                appendLine("    <rect x=\"${p.first}\" y=\"${p.second}\" width=\"$nodeW\" height=\"$nodeH\" rx=\"$rx\" ry=\"$rx\" fill=\"#fefefa\" stroke=\"$stroke\" stroke-width=\"1.5\"/>")
+                                val textStr = node.label.replace("<", "&lt;").replace(">", "&gt;")
+                                val provider = textToPathProvider
+                                if (provider != null) {
+                                    val pathD = provider(node.label, cx, cy, 14)
+                                    appendLine("    <path d=\"$pathD\" fill=\"#000000\" stroke=\"none\" />")
+                                } else {
+                                    appendLine("    <text x=\"$cx\" y=\"$cy\" dy=\"5\" fill=\"#000000\">$textStr</text>")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            appendLine("  </g>")
+            appendLine("</svg>")
+        }
+        return svg
+    }
 }
+
+private data class Edge(val from: String, val to: String, val label: String)
