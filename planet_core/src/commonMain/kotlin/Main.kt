@@ -94,12 +94,28 @@ fun main() {
     val src = """
         @startuml
         start
-        switch (condition?)
-        case (A)
-          :Action A;
-        case (B)
-          :Action B;
-        endswitch
+        fork
+          :Parallel 1;
+        fork again
+          :Parallel 2;
+        end merge
+        split
+          :Split 1;
+        split again
+          :Split 2;
+        end split
+        repeat
+          :Looping;
+          if (break?) then (yes)
+             break
+          endif
+          :More looping;
+        repeat while (more?)
+        label my_label
+        :After label;
+        if (goto label?) then (yes)
+          goto my_label
+        endif
         stop
         @enduml
     """.trimIndent()

@@ -16,6 +16,10 @@ statement:
     | keyword_stmt
     | legacy_transition
     | note_stmt
+    | break_stmt
+    | label_stmt
+    | goto_stmt
+    | split_stmt
     ;
 
 note_stmt: NOTE (RIGHT | LEFT | TOP | BOTTOM | FLOATING)? (OF identifier)? (':' paragraph_text EOL? | EOL? paragraph_text END_NOTE EOL?);
@@ -45,7 +49,17 @@ parallel: FORK EOL?
           statement*
           (FORK_AGAIN EOL?
           statement*)*
-          END_FORK EOL?;
+          (END_FORK | END_MERGE) EOL?;
+
+break_stmt: BREAK EOL?;
+label_stmt: LABEL identifier EOL?;
+goto_stmt: GOTO identifier EOL?;
+
+split_stmt: SPLIT EOL?
+            statement*
+            (SPLIT_AGAIN EOL?
+            statement*)*
+            END_SPLIT EOL?;
 
 keyword_stmt: (START | STOP | END | KILL | DETACH) EOL?;
 
@@ -54,7 +68,7 @@ legacy_transition: activity_state activity_arrow transition_label? activity_stat
 
 transition_label: '[' paragraph_text ']';
 
-paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | SWITCH | CASE | ENDSWITCH | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | OTHER_CHAR)+;
+paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | SWITCH | CASE | ENDSWITCH | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | END_MERGE | BREAK | LABEL | GOTO | SPLIT | SPLIT_AGAIN | END_SPLIT | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | OTHER_CHAR)+;
 
 activity_state: identifier | ACTIVITY_START_END;
 
@@ -94,6 +108,15 @@ REPEAT_WHILE: 'repeat while';
 FORK: 'fork';
 FORK_AGAIN: 'fork again';
 END_FORK: 'end fork';
+END_MERGE: 'end merge';
+
+SPLIT: 'split';
+SPLIT_AGAIN: 'split again';
+END_SPLIT: 'end split';
+
+BREAK: 'break';
+LABEL: 'label';
+GOTO: 'goto';
 
 NOTE: 'note';
 END_NOTE: 'end note';

@@ -59,6 +59,35 @@ object Samples {
         stop
         @enduml
     """.trimIndent()
+
+    val advancedFeatures = """
+        @startuml
+        start
+        fork
+          :Parallel 1;
+        fork again
+          :Parallel 2;
+        end merge
+        split
+          :Split 1;
+        split again
+          :Split 2;
+        end split
+        repeat
+          :Looping;
+          if (break?) then (yes)
+             break
+          endif
+          :More looping;
+        repeat while (more?)
+        label my_label
+        :After label;
+        if (goto label?) then (yes)
+          goto my_label
+        endif
+        stop
+        @enduml
+    """.trimIndent()
 }
 
 @Composable
@@ -107,8 +136,11 @@ fun App() {
                 Button(onClick = { plantUmlText = Samples.switchCase }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                     Text("Switch")
                 }
-                Button(onClick = { plantUmlText = Samples.parallelLoops }, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { plantUmlText = Samples.parallelLoops }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                     Text("Loops/Forks")
+                }
+                Button(onClick = { plantUmlText = Samples.advancedFeatures }, modifier = Modifier.fillMaxWidth()) {
+                    Text("Advanced")
                 }
             }
 

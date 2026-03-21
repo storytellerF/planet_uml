@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 var textToPathProvider: ((text: String, x: Double, y: Double, fontSize: Int) -> String)? = null
 
 enum class NodeShape {
-    CIRCLE, DOUBLE_CIRCLE, RECT, DIAMOND
+    CIRCLE, DOUBLE_CIRCLE, RECT, DIAMOND, POINT
 }
 
 enum class NodeStyle {
@@ -39,6 +39,12 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
     val nodeMap = mutableMapOf<String, Node>()
     private val transitionsList = mutableListOf<String>()
 
+    private val labels = mutableMapOf<String, Node>()
+    private val unresolvedGotos = mutableListOf<GotoResolution>()
+    private var currentLoopBreaks: MutableList<Node>? = null
+
+    private data class GotoResolution(val tails: List<Node>, val labelName: String, val isBackward: Boolean)
+
     val transitions: List<String>
         get() = transitionsList
 
@@ -47,6 +53,16 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
 
         activityDiagram.statement().forEach { stmt ->
             currentTails = processStatement(stmt, currentTails)
+        }
+
+        unresolvedGotos.forEach { gotoRes ->
+            val target = labels[gotoRes.labelName]
+            if (target != null) {
+                gotoRes.tails.forEach { addEdge(it, target, isBackEdge = gotoRes.isBackward) }
+            } else {
+                val errNode = createNode("Missing label: ${gotoRes.labelName}", NodeShape.RECT, listOf(NodeStyle.FILLED), ConstColor.GRAY)
+                gotoRes.tails.forEach { addEdge(it, errNode) }
+            }
         }
     }
 
@@ -155,14 +171,12 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                     if (isLastBranchAndElse) {
                         var branchTails = currentDiamondTails
                         if (branch.stmts.isNotEmpty()) {
-                            val firstNodes = processStatement(branch.stmts.first(), emptyList())
-                            firstNodes.forEach { dest -> 
-                                currentDiamondTails.forEach { 
-                                    addEdge(it, dest, branch.label ?: "no") 
-                                } 
+                            val branchEntry = createNode("", NodeShape.POINT, emptyList(), ConstColor.GRAY)
+                            currentDiamondTails.forEach { 
+                                addEdge(it, branchEntry, branch.label ?: "no") 
                             }
-                            branchTails = firstNodes
-                            for (j in 1 until branch.stmts.size) {
+                            branchTails = listOf(branchEntry)
+                            for (j in 0 until branch.stmts.size) {
                                 branchTails = processStatement(branch.stmts[j], branchTails)
                             }
                         }
@@ -176,10 +190,10 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                         
                         var branchTails = listOf(diamond)
                         if (branch.stmts.isNotEmpty()) {
-                            val firstNodes = processStatement(branch.stmts.first(), emptyList())
-                            firstNodes.forEach { addEdge(diamond, it, branch.label ?: "yes") }
-                            branchTails = firstNodes
-                            for (j in 1 until branch.stmts.size) {
+                            val branchEntry = createNode("", NodeShape.POINT, emptyList(), ConstColor.GRAY)
+                            addEdge(diamond, branchEntry, branch.label ?: "yes")
+                            branchTails = listOf(branchEntry)
+                            for (j in 0 until branch.stmts.size) {
                                 branchTails = processStatement(branch.stmts[j], branchTails)
                             }
                         }
@@ -240,13 +254,12 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 return listOf(diamond)
             }
             stmt.loop_repeat() != null -> {
-                 // For repeat, we enter the statements immediately
                  val stmts = stmt.loop_repeat()!!.statement()
-                 var loopTails = tails
-                 // We need a loop start point. If there are no previous tails, create a dummy or just use first node as entry
-                 // It's easier to create an invisible or point node, but let's just create an empty rect for entry
                  val entry = createNode("", NodeShape.CIRCLE, emptyList(), ConstColor.BLACK)
                  tails.forEach { addEdge(it, entry) }
+                 
+                 val oldBreaks = currentLoopBreaks
+                 currentLoopBreaks = mutableListOf()
                  
                  var currTails = listOf(entry)
                  for (s in stmts) {
@@ -257,11 +270,14 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                  val diamond = createNode(condLabel, NodeShape.DIAMOND, emptyList(), ConstColor.GRAY)
                  currTails.forEach { addEdge(it, diamond) }
                  
-                 // loop back
                  val isLabel = if (stmt.loop_repeat()!!.IS() != null) stmt.loop_repeat()!!.paragraph_text(1)?.text?.trim() else "yes"
                  addEdge(diamond, entry, isLabel, isBackEdge = true)
                  
-                 return listOf(diamond) // exit from diamond
+                 val outTails = mutableListOf<Node>(diamond)
+                 outTails.addAll(currentLoopBreaks ?: emptyList())
+                 currentLoopBreaks = oldBreaks
+                 
+                 return outTails
             }
             stmt.parallel() != null -> {
                 val ctx = stmt.parallel()!!
@@ -270,10 +286,6 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 
                 val outTails = mutableListOf<Node>()
                 
-                val stmts = ctx.statement()
-                // ANTLR flattened the statements. We need to split them by FORK_AGAIN which are terminals?
-                // Wait, parallel: FORK EOL? statement* (FORK_AGAIN EOL? statement*)* END_FORK EOL?
-                // Children contain FORK_AGAIN.
                 val branches = mutableListOf<MutableList<PlantUMLParser.StatementContext>>()
                 var currentBranch = mutableListOf<PlantUMLParser.StatementContext>()
                 for (child in ctx.children!!) {
@@ -297,6 +309,54 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                 val forkEnd = createNode("", NodeShape.RECT, listOf(NodeStyle.FILLED), ConstColor.BLACK)
                 outTails.forEach { addEdge(it, forkEnd) }
                 return listOf(forkEnd)
+            }
+            stmt.split_stmt() != null -> {
+                val ctx = stmt.split_stmt()!!
+                val splitStart = createNode("", NodeShape.RECT, listOf(NodeStyle.FILLED), ConstColor.BLACK)
+                tails.forEach { addEdge(it, splitStart) }
+                
+                val outTails = mutableListOf<Node>()
+                
+                val branches = mutableListOf<MutableList<PlantUMLParser.StatementContext>>()
+                var currentBranch = mutableListOf<PlantUMLParser.StatementContext>()
+                for (child in ctx.children!!) {
+                    if (child.text == "split" || child.text == "split again") {
+                        if (currentBranch.isNotEmpty()) branches.add(currentBranch)
+                        currentBranch = mutableListOf()
+                    } else if (child is PlantUMLParser.StatementContext) {
+                        currentBranch.add(child)
+                    }
+                }
+                if (currentBranch.isNotEmpty()) branches.add(currentBranch)
+                
+                for (branch in branches) {
+                    var currTails = listOf(splitStart)
+                    for (s in branch) {
+                        currTails = processStatement(s, currTails)
+                    }
+                    outTails.addAll(currTails)
+                }
+                
+                val splitEnd = createNode("", NodeShape.RECT, listOf(NodeStyle.FILLED), ConstColor.BLACK)
+                outTails.forEach { addEdge(it, splitEnd) }
+                return listOf(splitEnd)
+            }
+            stmt.break_stmt() != null -> {
+                currentLoopBreaks?.addAll(tails)
+                return emptyList()
+            }
+            stmt.goto_stmt() != null -> {
+                val labelName = stmt.goto_stmt()!!.identifier()?.text ?: ""
+                val isBackward = labels.containsKey(labelName)
+                unresolvedGotos.add(GotoResolution(tails, labelName, isBackward))
+                return emptyList()
+            }
+            stmt.label_stmt() != null -> {
+                val labelName = stmt.label_stmt()!!.identifier()?.text ?: ""
+                val node = createNode("", NodeShape.CIRCLE, emptyList(), ConstColor.BLACK)
+                tails.forEach { addEdge(it, node) }
+                labels[labelName] = node
+                return listOf(node)
             }
             stmt.note_stmt() != null -> {
                 val noteCtx = stmt.note_stmt()!!
@@ -377,7 +437,7 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
         val hSpacing = 160.0
         
         // Group by layer
-        val layerNodes = layers.entries.groupBy { it.value }.toSortedMap()
+        val layerNodes = layers.entries.groupBy { it.value }.entries.sortedBy { it.key }
         val coordinates = mutableMapOf<String, Pair<Double, Double>>()
         
         var maxW = 0.0
@@ -459,6 +519,10 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
                             val dh = 20.0
                             appendLine("    <polygon points=\"$cx,${cy-dh} ${cx+dw},$cy $cx,${cy+dh} ${cx-dw},$cy\" fill=\"#f9f9db\" stroke=\"$stroke\" stroke-width=\"1.5\"/>")
                             // Small label next to diamond sometimes
+                        }
+                        NodeShape.POINT -> {
+                            // invisible routing node
+                            // uncomment to debug: appendLine("    <circle cx=\"$cx\" cy=\"$cy\" r=\"2\" fill=\"red\" stroke=\"none\"/>")
                         }
                         NodeShape.RECT -> {
                             if (node.label.isBlank() && node.fillColor.toString() == "BLACK") {

@@ -9,13 +9,13 @@
 - [x] Detach or kill [detach, kill]
 
 ## Partially Implemented
-- [ ] Parallel processing [fork, fork again, end fork, end merge] (missing `end merge`)
+- [x] Parallel processing [fork, fork again, end fork, end merge] (missing `end merge`)
 
 ## Missing (To Implement)
-- [ ] Switch and case [switch, case, endswitch]
-- [ ] Break on a repeat loop [break]
-- [ ] Goto and Label Processing [label, goto]
-- [ ] Split processing [split, split again, end split]
+- [x] Switch and case [switch, case, endswitch]
+- [x] Break on a repeat loop [break]
+- [x] Goto and Label Processing [label, goto]
+- [x] Split processing [split, split again, end split]
 - [ ] Colors (e.g., `#red`)
 - [ ] Lines without arrows (e.g., `--`)
 - [ ] Simple colored arrow [link] (e.g., `-[#red]->`)
