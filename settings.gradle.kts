@@ -33,3 +33,4 @@ plugins {
 }
 
 include(":composeApp")
+include(":planet_core")
