@@ -88,6 +88,35 @@ object Samples {
         stop
         @enduml
     """.trimIndent()
+
+    val colors = """
+        @startuml
+        start
+        #red:Red Action;
+        -[#green]->
+        #blue:Blue Action;
+        -[#black,dashed]-> [test]
+        :Normal Action;
+        --
+        stop
+        @enduml
+    """.trimIndent()
+
+    val newFeatures = """
+        @startuml
+        |Lane 1|
+        start
+        partition "Prep Work" {
+          :<:umbrella:>; <<icon>>
+          (A)
+        }
+        
+        |Lane 2|
+        (A) #blue
+        :Build the thing;
+        stop
+        @enduml
+    """.trimIndent()
 }
 
 @Composable
@@ -139,8 +168,14 @@ fun App() {
                 Button(onClick = { plantUmlText = Samples.parallelLoops }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                     Text("Loops/Forks")
                 }
-                Button(onClick = { plantUmlText = Samples.advancedFeatures }, modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = { plantUmlText = Samples.advancedFeatures }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                     Text("Advanced")
+                }
+                Button(onClick = { plantUmlText = Samples.colors }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                    Text("Colors")
+                }
+                Button(onClick = { plantUmlText = Samples.newFeatures }, modifier = Modifier.fillMaxWidth()) {
+                    Text("New Features")
                 }
             }
 

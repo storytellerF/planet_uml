@@ -12,3 +12,9 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install -y fcitx fcitx-goog
 #     && usermod -aG docker $USER_NAME
 
 USER $USER_NAME
+WORKDIR /home/$USER_NAME
+
+COPY --chown=$USER_NAME:$USER_NAME ./custom-entrypoint.sh ./bin/custom-entrypoint.sh
+RUN chmod +x ./bin/custom-entrypoint.sh
+
+ENTRYPOINT ["sh", "-c", "$HOME/bin/custom-entrypoint.sh"]

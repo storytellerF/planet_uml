@@ -20,11 +20,23 @@ statement:
     | label_stmt
     | goto_stmt
     | split_stmt
+    | connector_stmt
+    | partition_stmt
+    | swimlane_stmt
+    | arrow_stmt
+    | short_action_stmt
     ;
 
 note_stmt: NOTE (RIGHT | LEFT | TOP | BOTTOM | FLOATING)? (OF identifier)? (':' paragraph_text EOL? | EOL? paragraph_text END_NOTE EOL?);
 
-action: ':' paragraph_text ';' EOL?;
+color_spec: COLOR_SPEC;
+stereotype: '<<' paragraph_text '>>';
+action: color_spec? stereotype? ':' paragraph_text ';' stereotype? EOL?;
+short_action_stmt: '-' stereotype? paragraph_text EOL?;
+
+connector_stmt: '(' identifier ')' color_spec? EOL?;
+partition_stmt: PARTITION paragraph_text '{' EOL? statement* '}' EOL?;
+swimlane_stmt: '|' paragraph_text '|' EOL?;
 
 conditional: IF '(' paragraph_text ')' THEN ('(' paragraph_text ')')? EOL?
              statement*
@@ -66,15 +78,19 @@ keyword_stmt: (START | STOP | END | KILL | DETACH) EOL?;
 legacy_transition: activity_state activity_arrow transition_label? activity_state EOL?
                  | activity_arrow transition_label? activity_state EOL?; 
 
+arrow_stmt: activity_arrow transition_label? EOL?;
+
 transition_label: '[' paragraph_text ']';
 
-paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | SWITCH | CASE | ENDSWITCH | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | END_MERGE | BREAK | LABEL | GOTO | SPLIT | SPLIT_AGAIN | END_SPLIT | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | OTHER_CHAR)+;
+paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | SWITCH | CASE | ENDSWITCH | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | END_MERGE | BREAK | LABEL | GOTO | SPLIT | SPLIT_AGAIN | END_SPLIT | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | PARTITION | EMOJI | OTHER_CHAR)+;
 
 activity_state: identifier | ACTIVITY_START_END;
 
-activity_arrow: '-->' | activity_arrow_dir | activity_arrow_right;
-activity_arrow_right: '->';
-activity_arrow_dir: '-' ARROW '->';
+arrow_style: ARROW_STYLE;
+activity_arrow: '-->' | '--' arrow_style '->' | activity_arrow_dir | activity_arrow_right | activity_line;
+activity_arrow_right: '->' | '-' arrow_style '->';
+activity_arrow_dir: '-' ARROW '->' | '-' arrow_style ARROW '->';
+activity_line: '--' | '-' arrow_style '-';
 
 identifier: short_identifier | long_identifier;
 short_identifier: SHORT_IDENTIFIER;
@@ -127,6 +143,8 @@ BOTTOM: 'bottom';
 FLOATING: 'floating';
 OF: 'of';
 
+PARTITION: 'partition';
+
 KILL: 'kill';
 DETACH: 'detach';
 
@@ -135,10 +153,13 @@ DOWN: 'down';
 ARROW: UP | DOWN | LEFT | RIGHT;
 ACTIVITY_START_END: '(*)';
 
+COLOR_SPEC: '#' [a-zA-Z0-9_]+;
+ARROW_STYLE: '[' '#' [a-zA-Z0-9_, ]+ ']';
 SHORT_IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
 LONG_IDENTIFIER: '"' ~('"'|'\r'|'\n')* '"';
+EMOJI: '<:' [a-zA-Z0-9_]+ ':>';
 
-PARAGRAPH: ~('\n'|'\r'|'('|')'|';'|'['|']'|':'|' '|'\t')+ ;
+PARAGRAPH: ~('\n'|'\r'|'('|')'|';'|'['|']'|':'|' '|'\t'|'|'|'<'|'>')+ ;
 
 EOL: '\r'? '\n';
 WS: [ \t]+ -> skip;

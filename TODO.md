@@ -16,12 +16,12 @@
 - [x] Break on a repeat loop [break]
 - [x] Goto and Label Processing [label, goto]
 - [x] Split processing [split, split again, end split]
-- [ ] Colors (e.g., `#red`)
-- [ ] Lines without arrows (e.g., `--`)
-- [ ] Simple colored arrow [link] (e.g., `-[#red]->`)
-- [ ] Multiple colored arrow (e.g., `-[#red,dashed]->`)
-- [ ] Connector (or Circle) (e.g., `(A)`)
-- [ ] Color on connector (e.g., `(A) #red`)
-- [ ] Grouping or partition (e.g., `partition "Name" { ... }`)
-- [ ] Swimlanes (e.g., `|Lane|`)
-- [ ] Emoji as action (with `+icon+` stereotype)
+- [x] Colors (e.g., `#red`)
+- [x] Lines without arrows (e.g., `--`)
+- [x] Simple colored arrow [link] (e.g., `-[#red]->`)
+- [x] Multiple colored arrow (e.g., `-[#red,dashed]->`)
+- [x] Connector (or Circle) (e.g., `(A)`)
+- [x] Color on connector (e.g., `(A) #red`)
+- [x] Grouping or partition (e.g., `partition "Name" { ... }`)
+- [x] Swimlanes (e.g., `|Lane|`)
+- [x] Emoji as action (with `+icon+` stereotype)
