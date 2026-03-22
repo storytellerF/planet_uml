@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320.0" height="520.0">
+  <g stroke="#333333" fill="none" stroke-width="1.5">
+    <path d="M 400.0 120.0 C 400.0 160.0, 400.0 160.0, 400.0 200.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,194.0 404.0,194.0 400.0,200.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 240.0 C 400.0 280.0, 100.0 280.0, 100.0 320.0" stroke="#333333" fill="none"/>
+    <polygon points="96.0,314.0 104.0,314.0 100.0,320.0" fill="#333333" stroke="none"/>
+    <text x="260.0" y="280.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">conditionA</text>
+    <path d="M 400.0 240.0 C 400.0 280.0, 380.0 280.0, 380.0 320.0" stroke="#333333" fill="none"/>
+    <polygon points="376.0,314.0 384.0,314.0 380.0,320.0" fill="#333333" stroke="none"/>
+    <text x="400.0" y="280.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">conditionB</text>
+    <path d="M 400.0 240.0 C 400.0 280.0, 660.0 280.0, 660.0 320.0" stroke="#333333" fill="none"/>
+    <polygon points="656.0,314.0 664.0,314.0 660.0,320.0" fill="#333333" stroke="none"/>
+    <text x="540.0" y="280.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">conditionC</text>
+    <path d="M 400.0 240.0 C 400.0 280.0, 940.0 280.0, 940.0 320.0" stroke="#333333" fill="none"/>
+    <polygon points="936.0,314.0 944.0,314.0 940.0,320.0" fill="#333333" stroke="none"/>
+    <text x="680.0" y="280.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">conditionD</text>
+    <path d="M 400.0 240.0 C 400.0 280.0, 1220.0 280.0, 1220.0 320.0" stroke="#333333" fill="none"/>
+    <polygon points="1216.0,314.0 1224.0,314.0 1220.0,320.0" fill="#333333" stroke="none"/>
+    <text x="820.0" y="280.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">conditionE</text>
+    <path d="M 100.0 360.0 C 100.0 400.0, 400.0 400.0, 400.0 440.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,434.0 404.0,434.0 400.0,440.0" fill="#333333" stroke="none"/>
+    <path d="M 380.0 360.0 C 380.0 400.0, 400.0 400.0, 400.0 440.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,434.0 404.0,434.0 400.0,440.0" fill="#333333" stroke="none"/>
+    <path d="M 660.0 360.0 C 660.0 400.0, 400.0 400.0, 400.0 440.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,434.0 404.0,434.0 400.0,440.0" fill="#333333" stroke="none"/>
+    <path d="M 940.0 360.0 C 940.0 400.0, 400.0 400.0, 400.0 440.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,434.0 404.0,434.0 400.0,440.0" fill="#333333" stroke="none"/>
+    <path d="M 1220.0 360.0 C 1220.0 400.0, 400.0 400.0, 400.0 440.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,434.0 404.0,434.0 400.0,440.0" fill="#333333" stroke="none"/>
+  </g>
+  <g font-family="sans-serif" font-size="14" text-anchor="middle">
+    <circle cx="400.0" cy="100.0" r="15" fill="#333333" stroke="#333333" stroke-width="2"/>
+    <polygon points="400.0,200.0 420.0,220.0 400.0,240.0 380.0,220.0" fill="#f9f9db" stroke="#333333" stroke-width="1.5"/>
+    <rect x="40.0" y="320.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="100.0" y="340.0" dy="5" fill="#000000">Text1</text>
+    <rect x="320.0" y="320.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="380.0" y="340.0" dy="5" fill="#000000">Text2</text>
+    <rect x="600.0" y="320.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="660.0" y="340.0" dy="5" fill="#000000">Text3</text>
+    <rect x="880.0" y="320.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="940.0" y="340.0" dy="5" fill="#000000">Text4</text>
+    <rect x="1160.0" y="320.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="1220.0" y="340.0" dy="5" fill="#000000">Text5</text>
+    <circle cx="400.0" cy="460.0" r="15" fill="none" stroke="#333333" stroke-width="2"/>
+    <circle cx="400.0" cy="460.0" r="10" fill="#333333" stroke="#333333" stroke-width="2"/>
+  </g>
+</svg>

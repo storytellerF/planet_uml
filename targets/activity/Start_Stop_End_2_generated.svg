@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500.0" height="640.0">
+  <g stroke="#333333" fill="none" stroke-width="1.5">
+    <path d="M 400.0 120.0 C 400.0 160.0, 400.0 160.0, 400.0 200.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,194.0 404.0,194.0 400.0,200.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 240.0 C 400.0 280.0, 400.0 280.0, 400.0 320.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,314.0 404.0,314.0 400.0,320.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 360.0 C 400.0 400.0, 400.0 400.0, 400.0 440.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,434.0 404.0,434.0 400.0,440.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 480.0 C 400.0 520.0, 400.0 520.0, 400.0 560.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,554.0 404.0,554.0 400.0,560.0" fill="#333333" stroke="none"/>
+  </g>
+  <g font-family="sans-serif" font-size="14" text-anchor="middle">
+    <circle cx="400.0" cy="100.0" r="15" fill="#333333" stroke="#333333" stroke-width="2"/>
+    <rect x="340.0" y="200.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="220.0" dy="5" fill="#000000">Helloworld</text>
+    <rect x="340.0" y="320.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="340.0" dy="5" fill="#000000">Thisisdefinedon</text>
+    <rect x="340.0" y="440.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="460.0" dy="5" fill="#000000">legacy</text>
+    <circle cx="400.0" cy="580.0" r="15" fill="none" stroke="#333333" stroke-width="2"/>
+    <circle cx="400.0" cy="580.0" r="10" fill="#333333" stroke="#333333" stroke-width="2"/>
+  </g>
+</svg>

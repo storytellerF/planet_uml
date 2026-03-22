@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640.0" height="1840.0">
+  <g stroke="#333333" fill="none" stroke-width="1.5">
+    <path d="M 400.0 120.0 C 400.0 160.0, 400.0 160.0, 400.0 200.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,194.0 404.0,194.0 400.0,200.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 240.0 C 400.0 280.0, 400.0 280.0, 400.0 320.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,314.0 404.0,314.0 400.0,320.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 360.0 C 400.0 400.0, 400.0 400.0, 400.0 440.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,434.0 404.0,434.0 400.0,440.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 480.0 C 400.0 520.0, 400.0 520.0, 400.0 560.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,554.0 404.0,554.0 400.0,560.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 600.0 C 400.0 640.0, 400.0 640.0, 400.0 680.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,674.0 404.0,674.0 400.0,680.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 720.0 C 400.0 760.0, 260.0 760.0, 260.0 800.0" stroke="#333333" fill="none"/>
+    <polygon points="256.0,794.0 264.0,794.0 260.0,800.0" fill="#333333" stroke="none"/>
+    <text x="340.0" y="760.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">yes</text>
+    <path d="M 260.0 840.0 C 260.0 880.0, 260.0 880.0, 260.0 920.0" stroke="#blue" fill="none"/>
+    <polygon points="256.0,914.0 264.0,914.0 260.0,920.0" fill="#blue" stroke="none"/>
+    <path d="M 260.0 960.0 C 260.0 1000.0, 400.0 1000.0, 400.0 1040.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,1034.0 404.0,1034.0 400.0,1040.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 1080.0 C 400.0 1120.0, 400.0 1120.0, 400.0 1160.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,1154.0 404.0,1154.0 400.0,1160.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 1200.0 C 400.0 1240.0, 400.0 1240.0, 400.0 1280.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,1274.0 404.0,1274.0 400.0,1280.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 1320.0 C 400.0 1360.0, 400.0 1360.0, 400.0 1400.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,1394.0 404.0,1394.0 400.0,1400.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 1440.0 C 400.0 1480.0, 400.0 1480.0, 400.0 1520.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,1514.0 404.0,1514.0 400.0,1520.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 1560.0 C 400.0 1600.0, 400.0 1600.0, 400.0 1640.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,1634.0 404.0,1634.0 400.0,1640.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 720.0 C 400.0 760.0, 540.0 760.0, 540.0 800.0" stroke="#333333" fill="none"/>
+    <polygon points="536.0,794.0 544.0,794.0 540.0,800.0" fill="#333333" stroke="none"/>
+    <text x="480.0" y="760.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">no</text>
+    <path d="M 540.0 840.0 C 540.0 880.0, 540.0 880.0, 540.0 920.0" stroke="#black" stroke-dasharray="5,5" fill="none"/>
+    <polygon points="536.0,914.0 544.0,914.0 540.0,920.0" fill="#black" stroke="none"/>
+    <path d="M 400.0 1680.0 C 400.0 1720.0, 400.0 1720.0, 400.0 1760.0" stroke="#gray" fill="none"/>
+    <polygon points="396.0,1754.0 404.0,1754.0 400.0,1760.0" fill="#gray" stroke="none"/>
+    <path d="M 540.0 960.0 C 540.0 1360.0, 400.0 1360.0, 400.0 1760.0" stroke="#gray" fill="none"/>
+    <polygon points="396.0,1754.0 404.0,1754.0 400.0,1760.0" fill="#gray" stroke="none"/>
+  </g>
+  <g font-family="sans-serif" font-size="14" text-anchor="middle">
+    <rect x="340.0" y="80.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="100.0" dy="5" fill="#000000">foo1</text>
+    <rect x="340.0" y="200.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="220.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="320.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="340.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="440.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="460.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="560.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="580.0" dy="5" fill="#000000">legacy</text>
+    <polygon points="400.0,680.0 420.0,700.0 400.0,720.0 380.0,700.0" fill="#f9f9db" stroke="#333333" stroke-width="1.5"/>
+    <rect x="200.0" y="920.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="260.0" y="940.0" dy="5" fill="#000000">foo2</text>
+    <rect x="340.0" y="1040.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="1060.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="1160.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="1180.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="1280.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="1300.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="1400.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="1420.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="1520.0" width="120.0" height="40.0" rx="0" ry="0" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="1540.0" dy="5" fill="#000000">legacy</text>
+    <rect x="340.0" y="1640.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="1660.0" dy="5" fill="#000000">foo3</text>
+    <rect x="480.0" y="920.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="540.0" y="940.0" dy="5" fill="#000000">foo4</text>
+    <rect x="340.0" y="1760.0" width="120.0" height="40.0" rx="10" ry="10" fill="#f0f0f0" stroke="#333333" stroke-width="1.5"/>
+    <text x="400.0" y="1780.0" dy="5" fill="#000000">foo5</text>
+  </g>
+</svg>

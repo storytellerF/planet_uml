@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640.0" height="280.0">
+  <g stroke="#333333" fill="none" stroke-width="1.5">
+    <path d="M 400.0 120.0 C 400.0 160.0, 260.0 160.0, 260.0 200.0" stroke="#333333" fill="none"/>
+    <polygon points="256.0,194.0 264.0,194.0 260.0,200.0" fill="#333333" stroke="none"/>
+    <text x="340.0" y="160.0" dy="4" font-family="sans-serif" font-size="12" fill="#000000">yes</text>
+    <path d="M 260.0 240.0 C 260.0 160.0, 400.0 160.0, 400.0 80.0" stroke="#333333" fill="none"/>
+    <polygon points="396.0,74.0 404.0,74.0 400.0,80.0" fill="#333333" stroke="none"/>
+    <path d="M 400.0 120.0 C 400.0 160.0, 540.0 160.0, 540.0 200.0" stroke="#333333" fill="none"/>
+    <polygon points="536.0,194.0 544.0,194.0 540.0,200.0" fill="#333333" stroke="none"/>
+  </g>
+  <g font-family="sans-serif" font-size="14" text-anchor="middle">
+    <polygon points="400.0,80.0 420.0,100.0 400.0,120.0 380.0,100.0" fill="#f9f9db" stroke="#333333" stroke-width="1.5"/>
+    <text x="260.0" y="220.0" dy="5" font-size="24" fill="#000000">☔</text>
+    <text x="540.0" y="220.0" dy="5" font-size="24" fill="#000000">🌂</text>
+  </g>
+</svg>
