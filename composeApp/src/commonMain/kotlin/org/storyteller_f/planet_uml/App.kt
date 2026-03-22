@@ -9,6 +9,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import coil3.compose.AsyncImage
 import org.example.parsePlantUML
 import java.nio.charset.StandardCharsets
@@ -203,31 +205,22 @@ fun App() {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (selectedCategory == "Activity Diagrams") {
-                    Button(onClick = { plantUmlText = Samples.basicActivity }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text("Basic")
-                    }
-                    Button(onClick = { plantUmlText = Samples.switchCase }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text("Switch")
-                    }
-                    Button(onClick = { plantUmlText = Samples.parallelLoops }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text("Loops/Forks")
-                    }
-                    Button(onClick = { plantUmlText = Samples.advancedFeatures }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text("Advanced")
-                    }
-                    Button(onClick = { plantUmlText = Samples.colors }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text("Colors")
-                    }
-                    Button(onClick = { plantUmlText = Samples.newFeatures }, modifier = Modifier.fillMaxWidth()) {
-                        Text("New Features")
-                    }
-                } else {
-                    Button(onClick = { plantUmlText = Samples.basicClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text("Basic Class")
-                    }
-                    Button(onClick = { plantUmlText = Samples.inheritanceClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                        Text("Inheritance")
+                Column(
+                    modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
+                ) {
+                    if (selectedCategory == "Activity Diagrams") {
+                        ActivitySamples.samples.forEach { (name, text) ->
+                            Button(onClick = { plantUmlText = text }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                                Text(name)
+                            }
+                        }
+                    } else {
+                        Button(onClick = { plantUmlText = Samples.basicClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                            Text("Basic Class")
+                        }
+                        Button(onClick = { plantUmlText = Samples.inheritanceClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                            Text("Inheritance")
+                        }
                     }
                 }
             }
