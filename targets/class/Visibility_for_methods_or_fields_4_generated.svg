@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800.0" height="400.0">
+  <g stroke="#333333" fill="none" stroke-width="1.5">
+  </g>
+  <g font-family="sans-serif" font-size="14">
+    <rect x="50.0" y="50.0" width="150.0" height="80.0" fill="#f9f9ca" stroke="#a80036" stroke-width="1.5" rx="2" ry="2"/>
+    <circle cx="68.0" cy="68.0" r="10" fill="#ADD1B2" stroke="#a80036" stroke-width="1"/>
+    <text x="68.0" y="72.0" fill="#000000" font-size="12" font-weight="bold" font-style="italic" text-anchor="middle">C</text>
+    <text x="125.0" y="65.0" fill="#000000" font-weight="bold" text-anchor="middle">Dummy</text>
+    <line x1="50.0" y1="75.0" x2="200.0" y2="75.0" stroke="#a80036" stroke-width="1.5"/>
+    <text x="55.0" y="90.0" fill="#000000" font-size="12" text-anchor="start">field1</text>
+    <text x="55.0" y="110.0" fill="#000000" font-size="12" text-anchor="start">\~Dummy</text>
+    <circle cx="425.0" cy="70.0" r="8" fill="#F9F9CA" stroke="#a80036" stroke-width="1.5"/>
+    <text x="425.0" y="90.0" fill="#000000" text-anchor="middle">
+method1</text>
+    <circle cx="725.0" cy="70.0" r="8" fill="#F9F9CA" stroke="#a80036" stroke-width="1.5"/>
+    <text x="725.0" y="90.0" fill="#000000" text-anchor="middle"></text>
+  </g>
+</svg>
