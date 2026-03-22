@@ -193,14 +193,12 @@ fun App() {
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        DropdownMenuItem(
-                            text = { Text("Activity Diagrams") },
-                            onClick = { selectedCategory = "Activity Diagrams"; expanded = false }
-                        )
-                        DropdownMenuItem(
-                            text = { Text("Class Diagrams") },
-                            onClick = { selectedCategory = "Class Diagrams"; expanded = false }
-                        )
+                        AllSamples.categories.keys.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category) },
+                                onClick = { selectedCategory = category; expanded = false }
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -208,18 +206,10 @@ fun App() {
                 Column(
                     modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState())
                 ) {
-                    if (selectedCategory == "Activity Diagrams") {
-                        ActivitySamples.samples.forEach { (name, text) ->
-                            Button(onClick = { plantUmlText = text }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                                Text(name)
-                            }
-                        }
-                    } else {
-                        Button(onClick = { plantUmlText = Samples.basicClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                            Text("Basic Class")
-                        }
-                        Button(onClick = { plantUmlText = Samples.inheritanceClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                            Text("Inheritance")
+                    val currentSamples = AllSamples.categories[selectedCategory] ?: emptyList()
+                    currentSamples.forEach { (name, text) ->
+                        Button(onClick = { plantUmlText = text }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                            Text(name)
                         }
                     }
                 }

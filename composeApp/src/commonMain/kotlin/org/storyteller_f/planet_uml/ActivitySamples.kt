@@ -210,10 +210,10 @@ repeat
       break
     endif
     ->NOK;
-    :Alert \"Error with long text\";
+    :Alert "Error with long text";
 repeat while (Something went wrong with long text?) is (yes) not (no)
 ->//merged step//;
-:Alert \"Success\";
+:Alert "Success";
 stop
 @enduml
 """.trimIndent(),
@@ -469,7 +469,7 @@ note right
   //lines// and can
   contain <b>HTML</b>
   ====
-  * Calling the method \"\"foo()\"\" is prohibited
+  * Calling the method ""foo()"" is prohibited
 end note
 stop
 
@@ -489,7 +489,7 @@ stop
         "Notes 3" to """
 @startuml
 start
-partition \"**process** HelloWorld\" {
+partition "**process** HelloWorld" {
     note
         This is my note
         ----
@@ -694,7 +694,7 @@ stop
         "Partition 2" to """
 @startuml
 start
-partition #lightGreen \"Input Interface\" {
+partition #lightGreen "Input Interface" {
     :read config file;
     :init internal variable;
 }
@@ -708,7 +708,7 @@ stop
         "Partition 3" to """
 @startuml
 start
-partition \"[[http://plantuml.com partition_name]]\" {
+partition "[[http://plantuml.com partition_name]]" {
     :read doc. on [[http://plantuml.com plantuml_website]];
     :test diagram;
 }
@@ -1123,7 +1123,7 @@ end
   wave: ~~wave~~
   bold: **bold**
   italics: //italics//
-  monospaced: \"\"monospaced\"\"
+  monospaced: ""monospaced""
   stricken-out: --stricken-out--
   underlined: __underlined__
   not-underlined: ~__not underlined__
