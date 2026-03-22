@@ -578,8 +578,10 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
             val existingDepth = layers[nodeId] ?: -1
             if (depth > existingDepth) {
                 layers[nodeId] = depth
-                val outEdges = edges.filter { it.from == nodeId && !it.isBackEdge }
-                outEdges.forEach { queue.addLast(it.to to depth + 1) }
+                if (depth < 1000) {
+                    val outEdges = edges.filter { it.from == nodeId && !it.isBackEdge }
+                    outEdges.forEach { queue.addLast(it.to to depth + 1) }
+                }
             }
         }
 

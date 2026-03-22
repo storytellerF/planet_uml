@@ -65,6 +65,10 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutinesSwing)
         }
+        jvmTest.dependencies {
+            implementation(libs.batik.transcoder)
+            implementation(libs.batik.codec)
+        }
     }
 }
 

@@ -38,6 +38,8 @@ compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-previ
 kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coil" }
+batik-transcoder = { module = "org.apache.xmlgraphics:batik-transcoder", version = "1.17" }
+batik-codec = { module = "org.apache.xmlgraphics:batik-codec", version = "1.17" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
