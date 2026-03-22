@@ -15,7 +15,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 //
 @OptIn(ExperimentalUuidApi::class)
-fun parsePlantUML(plantUMLContent: String): ActivityDiagram? {
+fun parsePlantUML(plantUMLContent: String): Diagram? {
     val inputStream = CharStreams.fromString(plantUMLContent)
     val lexer = PlantUMLLexer(inputStream)
     val tokens = CommonTokenStream(lexer)
@@ -68,8 +68,13 @@ fun parsePlantUML(plantUMLContent: String): ActivityDiagram? {
         }
 
     })
-    val diagramContext = parser.plantuml().diagram()?.activity_diagram() ?: return null
-    return ActivityDiagram(diagramContext)
+    val diagramContext = parser.plantuml().diagram() ?: return null
+    if (diagramContext.activity_diagram() != null) {
+        return ActivityDiagram(diagramContext.activity_diagram()!!)
+    } else if (diagramContext.class_diagram() != null) {
+        return ClassDiagram(diagramContext.class_diagram()!!)
+    }
+    return null
 }
 
 fun StringBuilder.appendScope(block: () -> List<String>) {
@@ -105,8 +110,10 @@ fun main() {
     """.trimIndent()
     val diagram = parsePlantUML(src)
     if (diagram != null) {
-        println("Transitions:")
-        diagram.transitions.forEach { println(it) }
+        if (diagram is ActivityDiagram) {
+            println("Transitions:")
+            diagram.transitions.forEach { println(it) }
+        }
         println("\nSVG:\n${diagram.toSvg()}")
     } else {
         println("Failed to parse diagram")

@@ -2,7 +2,7 @@ grammar PlantUML;
 
 plantuml: STARTUML EOL? diagram ENDUML EOF|;
 
-diagram: activity_diagram;
+diagram: activity_diagram | class_diagram;
 
 activity_diagram: statement*;
 
@@ -25,6 +25,33 @@ statement:
     | swimlane_stmt
     | arrow_stmt
     | short_action_stmt
+    ;
+
+class_diagram: class_statement*;
+
+class_statement:
+      class_declaration EOL?
+    | class_relation EOL?
+    | note_stmt EOL?
+    ;
+
+class_declaration: (CLASS | INTERFACE | ABSTRACT CLASS? | ANNOTATION | CIRCLE | DATACLASS | DIAMOND | ENTITY | ENUM | EXCEPTION | METACLASS | PROTOCOL | RECORD | STEREOTYPE | STRUCT | '()' | '<>') identifier stereotype? ('{' EOL? class_body_element* '}')? ;
+
+class_body_element: paragraph_text EOL?;
+
+class_relation: identifier class_relation_arrow identifier (':' paragraph_text)?;
+
+class_relation_arrow: 
+      '--' | '..' | '-->' | '<--' | '..>' | '<..' 
+    | '<|--' | '--|>' | '<|..' | '..|>' 
+    | '*--' | '--*' | 'o--' | '--o'
+    | '-' ARROW '-' | '.' ARROW '.' 
+    | '-' ARROW '->' | '<-' ARROW '-' 
+    | '.' ARROW '.>' | '<.' ARROW '.' 
+    | '<|' '-' ARROW '-' | '-' ARROW '-|>' 
+    | '<|' '.' ARROW '.' | '.' ARROW '.|>' 
+    | '*' '-' ARROW '-' | '-' ARROW '-*' 
+    | 'o' '-' ARROW '-' | '-' ARROW '-o'
     ;
 
 note_stmt: NOTE (RIGHT | LEFT | TOP | BOTTOM | FLOATING)? (OF identifier)? (':' paragraph_text EOL? | EOL? paragraph_text END_NOTE EOL?);
@@ -82,7 +109,7 @@ arrow_stmt: activity_arrow transition_label? EOL?;
 
 transition_label: '[' paragraph_text ']';
 
-paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | SWITCH | CASE | ENDSWITCH | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | END_MERGE | BREAK | LABEL | GOTO | SPLIT | SPLIT_AGAIN | END_SPLIT | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | PARTITION | EMOJI | OTHER_CHAR)+;
+paragraph_text: (PARAGRAPH | SHORT_IDENTIFIER | LONG_IDENTIFIER | START | STOP | END | IF | THEN | ELSEIF | ELSE | ENDIF | SWITCH | CASE | ENDSWITCH | WHILE | IS | ENDWHILE | REPEAT | REPEAT_WHILE | FORK | FORK_AGAIN | END_FORK | END_MERGE | BREAK | LABEL | GOTO | SPLIT | SPLIT_AGAIN | END_SPLIT | NOTE | END_NOTE | RIGHT | LEFT | TOP | BOTTOM | FLOATING | OF | KILL | DETACH | ARROW | PARTITION | EMOJI | CLASS | INTERFACE | ABSTRACT | ANNOTATION | CIRCLE | DATACLASS | DIAMOND | ENTITY | ENUM | EXCEPTION | METACLASS | PROTOCOL | RECORD | STEREOTYPE | STRUCT | OTHER_CHAR)+;
 
 activity_state: identifier | ACTIVITY_START_END;
 
@@ -148,6 +175,22 @@ PARTITION: 'partition';
 KILL: 'kill';
 DETACH: 'detach';
 
+CLASS: 'class';
+INTERFACE: 'interface';
+ABSTRACT: 'abstract';
+ANNOTATION: 'annotation';
+CIRCLE: 'circle';
+DATACLASS: 'dataclass';
+DIAMOND: 'diamond';
+ENTITY: 'entity';
+ENUM: 'enum';
+EXCEPTION: 'exception';
+METACLASS: 'metaclass';
+PROTOCOL: 'protocol';
+RECORD: 'record';
+STEREOTYPE: 'stereotype';
+STRUCT: 'struct';
+
 UP: 'up';
 DOWN: 'down';
 ARROW: UP | DOWN | LEFT | RIGHT;
@@ -159,7 +202,7 @@ SHORT_IDENTIFIER: [a-zA-Z_][a-zA-Z_0-9]*;
 LONG_IDENTIFIER: '"' ~('"'|'\r'|'\n')* '"';
 EMOJI: '<:' [a-zA-Z0-9_]+ ':>';
 
-PARAGRAPH: ~('\n'|'\r'|'('|')'|';'|'['|']'|':'|' '|'\t'|'|'|'<'|'>')+ ;
+PARAGRAPH: ~('\n'|'\r'|'('|')'|'{'|'}'|';'|'['|']'|':'|' '|'\t'|'|'|'<'|'>')+ ;
 
 EOL: '\r'? '\n';
 WS: [ \t]+ -> skip;

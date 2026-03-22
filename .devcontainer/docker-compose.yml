@@ -20,7 +20,6 @@ services:
       - ..:/workspace/planet_uml:cached
       - ./data/authorized_keys:${CONTAINER_HOME}/.ssh/authorized_keys
       - ~/.gradle/gradle.properties:${CONTAINER_HOME}/.gradle/gradle.properties # 如果需要GithHub Packages
-      - /var/run/docker.sock:/var/run/docker.sock # 宿主机 Docker 套接字
       - avd_data:${CONTAINER_HOME}/.android/avd
       - sdk_data:${CONTAINER_HOME}/Android/Sdk
       - bash_history:${CONTAINER_HOME}/.android-in-docker/.bash_history
@@ -34,6 +33,7 @@ services:
       - google_local:${CONTAINER_HOME}/.local/share/Google
       - antigravity_config:${CONTAINER_HOME}/.config/Antigravity
       - gemini_data:${CONTAINER_HOME}/.gemini
+      - antigravity_data:${CONTAINER_HOME:-/home/debian}/.antigravity
     shm_size: '2gb' # Allocate more shared memory
     privileged: true # Enable KVM acceleration
 
@@ -53,3 +53,4 @@ volumes:
   google_local:
   antigravity_config:
   gemini_data:
+  antigravity_data:

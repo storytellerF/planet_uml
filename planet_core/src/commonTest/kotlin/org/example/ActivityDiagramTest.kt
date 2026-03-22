@@ -18,7 +18,7 @@ endif
 stop
 @enduml""".trim()
         println("TRANSITIONS START")
-        val diagram = parsePlantUML(input)!!
+        val diagram = parsePlantUML(input) as ActivityDiagram
         diagram.transitions.forEach { println(it) }
         println("TRANSITIONS END")
         val svg = diagram.toSvg()
@@ -40,7 +40,7 @@ start
 :Step 2;
 stop
 @enduml""".trim()
-        val diagram = parsePlantUML(input)!!
+        val diagram = parsePlantUML(input) as ActivityDiagram
         val svg = diagram.toSvg()
         println("TEST CONNECTORS SVG:\\n$svg")
         kotlin.test.assertTrue(svg.contains(">A</text>") || svg.contains("fill=\"#000000\" stroke=\"none\""), "SVG should contain connector A")
@@ -56,7 +56,7 @@ partition "My Group" {
 }
 stop
 @enduml""".trim()
-        val diagram = parsePlantUML(input)!!
+        val diagram = parsePlantUML(input) as ActivityDiagram
         val svg = diagram.toSvg()
         kotlin.test.assertTrue(svg.contains("My Group"), "SVG should contain the partition label")
     }
@@ -71,7 +71,7 @@ start
 :Action 2;
 stop
 @enduml""".trim()
-        val diagram = parsePlantUML(input)!!
+        val diagram = parsePlantUML(input) as ActivityDiagram
         val svg = diagram.toSvg()
         println("TEST SWIMLANES SVG:\\n$svg")
         kotlin.test.assertTrue(svg.contains("Lane1"), "SVG should contain Lane 1")
@@ -85,7 +85,7 @@ start
 <<+icon+>> :Action with emoji;
 stop
 @enduml""".trim()
-        val diagram = parsePlantUML(input)!!
+        val diagram = parsePlantUML(input) as ActivityDiagram
         val svg = diagram.toSvg()
         println("TEST STEREOTYPE SVG:\\n$svg")
         kotlin.test.assertTrue(svg.contains("Actionwithemoji"), "SVG should contain the action label")
@@ -100,7 +100,7 @@ while (<:cloud_with_rain:>)
 endwhile
 -<<icon>><:closed_umbrella:>
 @enduml""".trim()
-        val diagram = parsePlantUML(input)!!
+        val diagram = parsePlantUML(input) as ActivityDiagram
         val svg = diagram.toSvg()
         println("TEST USER EMOJI SVG:\\n$svg")
     }

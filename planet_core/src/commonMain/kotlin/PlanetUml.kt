@@ -5,5 +5,5 @@ class PlanetUml {
 }
 
 interface Diagram {
-
+    fun toSvg(): String
 }

@@ -533,7 +533,7 @@ class ActivityDiagram(activityDiagram: PlantUMLParser.Activity_diagramContext) :
     }
 
     // A very simple vertical topological layout for SVG generation
-    fun toSvg(): String {
+    override fun toSvg(): String {
         // Find roots (nodes with no incoming edges)
         val incomingCounts = mutableMapOf<String, Int>()
         nodeMap.keys.forEach { incomingCounts[it] = 0 }

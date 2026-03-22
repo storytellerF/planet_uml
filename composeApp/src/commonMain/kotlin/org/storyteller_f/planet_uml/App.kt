@@ -117,6 +117,26 @@ object Samples {
         stop
         @enduml
     """.trimIndent()
+
+    val basicClassDiagram = """
+        @startuml
+        class User {
+          id: Int
+          name: String
+        }
+        interface Auth
+        User -- Auth : authenticates
+        @enduml
+    """.trimIndent()
+
+    val inheritanceClassDiagram = """
+        @startuml
+        abstract class Person
+        class Admin
+        Person <|-- Admin
+        Building *-- Room
+        @enduml
+    """.trimIndent()
 }
 
 @Composable
@@ -158,24 +178,57 @@ fun App() {
                     .padding(16.dp)
             ) {
                 Text("Samples", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                var selectedCategory by remember { mutableStateOf("Activity Diagrams") }
+                var expanded by remember { mutableStateOf(false) }
+
+                Box {
+                    Button(onClick = { expanded = true }, modifier = Modifier.fillMaxWidth()) {
+                        Text(selectedCategory)
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Activity Diagrams") },
+                            onClick = { selectedCategory = "Activity Diagrams"; expanded = false }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Class Diagrams") },
+                            onClick = { selectedCategory = "Class Diagrams"; expanded = false }
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(16.dp))
-                Button(onClick = { plantUmlText = Samples.basicActivity }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text("Basic")
-                }
-                Button(onClick = { plantUmlText = Samples.switchCase }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text("Switch")
-                }
-                Button(onClick = { plantUmlText = Samples.parallelLoops }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text("Loops/Forks")
-                }
-                Button(onClick = { plantUmlText = Samples.advancedFeatures }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text("Advanced")
-                }
-                Button(onClick = { plantUmlText = Samples.colors }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                    Text("Colors")
-                }
-                Button(onClick = { plantUmlText = Samples.newFeatures }, modifier = Modifier.fillMaxWidth()) {
-                    Text("New Features")
+
+                if (selectedCategory == "Activity Diagrams") {
+                    Button(onClick = { plantUmlText = Samples.basicActivity }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text("Basic")
+                    }
+                    Button(onClick = { plantUmlText = Samples.switchCase }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text("Switch")
+                    }
+                    Button(onClick = { plantUmlText = Samples.parallelLoops }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text("Loops/Forks")
+                    }
+                    Button(onClick = { plantUmlText = Samples.advancedFeatures }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text("Advanced")
+                    }
+                    Button(onClick = { plantUmlText = Samples.colors }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text("Colors")
+                    }
+                    Button(onClick = { plantUmlText = Samples.newFeatures }, modifier = Modifier.fillMaxWidth()) {
+                        Text("New Features")
+                    }
+                } else {
+                    Button(onClick = { plantUmlText = Samples.basicClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text("Basic Class")
+                    }
+                    Button(onClick = { plantUmlText = Samples.inheritanceClassDiagram }, modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                        Text("Inheritance")
+                    }
                 }
             }
 
